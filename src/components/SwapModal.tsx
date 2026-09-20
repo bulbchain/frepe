@@ -8,6 +8,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { sound } from "../audio";
+import { SOCIAL_LINKS } from "../constants/socialLinks";
 
 interface SwapModalProps {
   isOpen: boolean;
@@ -21,8 +22,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   const [solAmount, setSolAmount] = useState<string>("1.5");
 
   if (!isOpen) return null;
-
-  const pumpFunUrl = "https://pump.fun/";
 
   return (
     <div
@@ -101,7 +100,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
               {/* Pump.fun Button */}
               <a
-                href={pumpFunUrl}
+                href={SOCIAL_LINKS.PUMP_FUN}
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => sound.playBoost()}
@@ -205,7 +204,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
             {/* Pump.fun Link */}
             <a
-              href={pumpFunUrl}
+              href={SOCIAL_LINKS.PUMP_FUN}
               target="_blank"
               rel="noreferrer"
               onClick={() => sound.playBoost()}

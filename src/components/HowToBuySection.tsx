@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Copy, Check, ArrowRight, ArrowDownUp, Flame } from "lucide-react";
 import { sound } from "../audio";
+import { SOCIAL_LINKS, CONTRACT_ADDRESS } from "../constants/socialLinks";
 
 interface HowToBuySectionProps {
   onOpenSwap: () => void;
@@ -8,10 +9,10 @@ interface HowToBuySectionProps {
 
 export const HowToBuySection: React.FC<HowToBuySectionProps> = ({ onOpenSwap }) => {
   const [copied, setCopied] = useState(false);
-  const contractAddress = "coming soon";
+  
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(contractAddress);
+    navigator.clipboard.writeText(CONTRACT_ADDRESS);
     setCopied(true);
     sound.playBoost();
     setTimeout(() => setCopied(false), 2000);

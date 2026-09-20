@@ -1,5 +1,6 @@
 import React from "react";
 import { CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { SOCIAL_LINKS } from "../constants/socialLinks";
 
 export const RoadmapSection: React.FC = () => {
   const phases = [

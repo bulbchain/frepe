@@ -15,6 +15,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { sound } from "../audio";
+import { SOCIAL_LINKS } from "../constants/socialLinks";
 
 import frepeJacuzzi from "../assets/images/frepe_fry_jacuzzi_1789905527682.jpg";
 import frepeBoardroom from "../assets/images/frepe_boardroom_raid_1789905512832.jpg";
@@ -156,7 +157,7 @@ export const MemeStashSection: React.FC<{ onOpenSwap: () => void }> = ({ onOpenS
   const handleShareToX = (m: MemeItem) => {
     sound.playBoost();
     const tweetText = encodeURIComponent(`${m.raidText}\n\nCA: coming soon`);
-    window.open(`https://x.com/intent/tweet?text=${tweetText}`, "_blank");
+    window.open(`${SOCIAL_LINKS.TWITTER_INTENT}?text=${tweetText}`, "_blank");
   };
 
   // Draw Meme Canvas for the Generator
@@ -684,7 +685,7 @@ export const MemeStashSection: React.FC<{ onOpenSwap: () => void }> = ({ onOpenS
     {/* X */}
     <a
       id="grand-banner-x-btn"
-      href="https://x.com/frepeofficial"
+      href={SOCIAL_LINKS.TWITTER}
       target="_blank"
       rel="noreferrer"
       className="neo-brutal-btn bg-[#131b2e] text-[#ffecb9] hover:bg-black font-headline text-base sm:text-lg uppercase px-6 py-3.5 rounded-xl flex items-center gap-2 border-2 border-black font-black shadow-[4px_4px_0px_#3c2f00]"
@@ -704,7 +705,7 @@ export const MemeStashSection: React.FC<{ onOpenSwap: () => void }> = ({ onOpenS
     {/* Pump.fun */}
     <a
       id="grand-banner-pump-btn"
-      href="https://pump.fun/"
+      href={SOCIAL_LINKS.PUMP_FUN}
       target="_blank"
       rel="noreferrer"
       className="neo-brutal-btn bg-[#4ae176] text-[#002109] font-headline text-base sm:text-lg uppercase px-6 py-3.5 rounded-xl flex items-center gap-2 border-2 border-black font-black shadow-[4px_4px_0px_#3c2f00]"

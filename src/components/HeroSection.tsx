@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Check, Copy, Flame, TrendingUp, Send, ShieldCheck, Zap } from "lucide-react";
 import gentlemanPepeImg from "../assets/images/gentleman_pepe_refined_1789889197008.jpg";
 import twitterImg from "../assets/images/twitter.png";
+import { SOCIAL_LINKS, CONTRACT_ADDRESS } from "../constants/socialLinks";
 
 interface HeroSectionProps {
   onOpenSwap: () => void;
@@ -10,7 +11,7 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenSwap, onOpenGame }) => {
   const [copied, setCopied] = useState(false);
-  const contractAddress = "Coming soon";
+  const contractAddress = CONTRACT_ADDRESS;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(contractAddress);
@@ -32,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenSwap, onOpenGame
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#93000a] text-[#ffdad6] font-mono-code text-[11px] uppercase tracking-wider font-bold -rotate-1 shadow-[2px_2px_0px_#000000]"
           >
             <span className="inline-block w-2 h-2 rounded-full bg-[#ffb4ab] animate-pulse" />
-            FRESH OUT OF THE FRYER • LIVE ON PUMP.FUN
+            FRESH OUT OF THE FRYER • LIVE ON <a href={SOCIAL_LINKS.PUMP_FUN} target="_blank" rel="noreferrer" className="underline hover:text-[#facc15]">PUMP.FUN</a>
           </span>
           <span
             id="hero-lp-locked-chip"
@@ -128,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenSwap, onOpenGame
 
               <a
                 id="hero-twitter-link"
-                href="https://x.com/frepeofficial"
+                href={SOCIAL_LINKS.TWITTER}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-brutal-btn bg-[#131b2e] p-3.5 rounded-xl flex items-center justify-center border-2 border-[#2d3449] shadow-[4px_4px_0px_#000000]"

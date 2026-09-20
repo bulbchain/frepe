@@ -1,4 +1,5 @@
 import React from "react";
+import { SOCIAL_LINKS } from "../constants/socialLinks";
 
 export const TickerMarquees: React.FC = () => {
   return (

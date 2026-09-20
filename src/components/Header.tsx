@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Volume2, VolumeX, Menu, X, Send, Flame, Fuel } from "lucide-react";
 import { sound } from "../audio";
+import { SOCIAL_LINKS, CONTRACT_ADDRESS_SHORT,LOGO } from "../constants/socialLinks";
+import gentlemanPepeImg from "../assets/images/logo.png";
 
 interface HeaderProps {
   onOpenSwap: () => void;
@@ -83,25 +85,26 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="h-20 max-w-[1280px] mx-auto px-4 lg:px-8 flex items-center justify-between gap-4">
           {/* Logo & Burn / Gas Pill */}
           <div className="flex items-center gap-4">
-            <a
-              id="header-brand-link"
-              href="#about"
-              className="flex items-center gap-2 group cursor-pointer"
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#facc15] text-[#3c2f00] border-2 border-black flex items-center justify-center text-xl font-headline shadow-[2px_2px_0px_#000000] -rotate-3 group-hover:rotate-0 transition-transform">
-                🍟
-              </div>
-              <div className="flex flex-col">
-                <span className="font-headline text-2xl leading-none text-[#ffecb9] uppercase tracking-tight font-black">
-                  FREPE
-                </span>
-                <span className="font-mono-code text-[11px] text-[#4ae176] font-bold tracking-wider">
-                  $FREPE OFFICIAL
-                </span>
-              </div>
-            </a>
+<a
+  id="header-brand-link"
+  href="#about"
+  className="flex items-center gap-2 group cursor-pointer"
+>
+  <img
+    src={gentlemanPepeImg}
+    alt="11FREPE Logo"
+    className="w-20 h-20 object-contain"
+  />
+  <div className="flex flex-col -ml-1">
+    <span className="font-headline text-1xl leading-none text-[#ffecb9] uppercase tracking-tight font-black">
+      FREPE
+    </span>
+  </div>
+</a>
 
-            <div className="hidden xl:flex items-center gap-2 bg-[#131b2e] border border-[#2d3449] px-3 py-1 rounded-full font-mono-code text-[12px]">
+
+
+            {/* <div className="hidden xl:flex items-center gap-2 bg-[#131b2e] border border-[#2d3449] px-3 py-1 rounded-full font-mono-code text-[12px]">
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ae176] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4ae176]"></span>
@@ -111,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="text-[#d1c6ab] flex items-center gap-1">
                 <Fuel className="w-3.5 h-3.5 text-[#facc15]" /> SOL &lt;$0.001 Fee
               </span>
-            </div>
+            </div> */}
           </div>
 
           {/* Desktop Navigation */}
@@ -174,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="hidden sm:flex items-center gap-1 bg-[#222a3d] px-2 py-1 rounded-lg border border-[#2d3449]">
               <a
                 id="header-telegram-icon"
-                href="https://t.me"
+                href={SOCIAL_LINKS.TELEGRAM}
                 target="_blank"
                 rel="noreferrer"
                 className="p-1 text-[#d1c6ab] hover:text-[#facc15] transition-colors"
@@ -246,8 +249,15 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             ))}
             <div className="pt-2 border-t border-[#2d3449] flex items-center justify-between text-xs font-mono-code text-[#9a9078]">
-              <span>MINT: FrePe777...Pump</span>
-              <span className="text-[#4ae176]">PUMP.FUN VERIFIED</span>
+              <span>MINT: {CONTRACT_ADDRESS_SHORT}</span>
+              <a
+                href={SOCIAL_LINKS.PUMP_FUN}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#4ae176] hover:text-[#facc15] transition-colors"
+              >
+                PUMP.FUN VERIFIED
+              </a>
             </div>
           </div>
         )}

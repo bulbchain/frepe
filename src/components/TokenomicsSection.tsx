@@ -6,6 +6,7 @@ import {
   Building2,
   Flame,
 } from "lucide-react";
+import { SOCIAL_LINKS } from "../constants/socialLinks";
 
 export const TokenomicsSection: React.FC = () => {
   return (
@@ -68,10 +69,15 @@ export const TokenomicsSection: React.FC = () => {
                 Launch:
               </span>
 
-              <span className="text-[#4ae176] font-bold flex items-center gap-1">
+              <a
+                href={SOCIAL_LINKS.PUMP_FUN}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#4ae176] font-bold flex items-center gap-1 hover:text-[#facc15] transition-colors"
+              >
                 <ShieldCheck className="w-4 h-4" />
                 PUMP.FUN
-              </span>
+              </a>
             </div>
           </div>
 

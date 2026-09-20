@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import gentlemanPepeImg from "../assets/images/logo.png";
 import {
   Copy,
   Check,
@@ -6,13 +7,14 @@ import {
   Flame,
 } from "lucide-react";
 import { sound } from "../audio";
+import { SOCIAL_LINKS, CONTRACT_ADDRESS } from "../constants/socialLinks";
 
 export const Footer: React.FC<{
   onOpenLeaderboard: () => void;
 }> = ({ onOpenLeaderboard }) => {
   const [copied, setCopied] = useState(false);
 
-  const ca = "coming soon";
+  const ca = CONTRACT_ADDRESS;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(ca);
@@ -39,21 +41,24 @@ export const Footer: React.FC<{
           {/* BRAND */}
           <div className="md:col-span-5 flex flex-col gap-5">
 
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#facc15] border-2 border-black shadow-[4px_4px_0px_#000] flex items-center justify-center text-2xl -rotate-3">
-                🍟
-              </div>
+         <div className="flex items-center gap-3">
+  <img
+      src={gentlemanPepeImg}
+      alt="FREPE Logo"
+      className="w-20 h-20 object-contain"
+    />
 
-              <div>
-                <div className="font-headline text-3xl text-[#ffecb9] uppercase font-black leading-none">
-                  FREPE
-                </div>
+  <div>
+    <div className="font-headline text-3xl text-[#ffecb9] uppercase font-black leading-none">
+      FREPE
+    </div>
 
-                <div className="font-mono-code text-[10px] text-[#4ae176] uppercase tracking-widest mt-1">
-                  CRISPY EXECUTIVE DEPARTMENT
-                </div>
-              </div>
-            </div>
+    <div className="font-mono-code text-[10px] text-[#4ae176] uppercase tracking-widest mt-1">
+      CRISPY EXECUTIVE DEPARTMENT
+    </div>
+  </div>
+</div>
+
 
             <p className="text-sm text-[#d1c6ab] font-body leading-relaxed max-w-md">
               The suited Pepe running the crispiest operation on Solana.
@@ -190,7 +195,7 @@ export const Footer: React.FC<{
 
               {/* X */}
               <a
-                href="https://x.com/frepeofficial"
+                href={SOCIAL_LINKS.TWITTER}
                 target="_blank"
                 rel="noreferrer"
                 className="px-3 py-2.5 bg-[#131b2e] hover:bg-[#222a3d] text-[#dae2fd] rounded-lg border border-[#2d3449] hover:border-[#facc15] flex items-center gap-2 font-bold transition-all"
@@ -201,7 +206,7 @@ export const Footer: React.FC<{
 
               {/* DexScreener */}
               <a
-                href="https://dexscreener.com"
+                href={SOCIAL_LINKS.DEX_SCREENER}
                 target="_blank"
                 rel="noreferrer"
                 className="px-3 py-2.5 bg-[#131b2e] hover:bg-[#222a3d] text-[#dae2fd] rounded-lg border border-[#2d3449] hover:border-[#facc15] flex items-center gap-2 font-bold transition-all"
@@ -212,7 +217,7 @@ export const Footer: React.FC<{
 
               {/* Solscan */}
               <a
-                href="https://solscan.io"
+                href={SOCIAL_LINKS.SOLSCAN}
                 target="_blank"
                 rel="noreferrer"
                 className="px-3 py-2.5 bg-[#131b2e] hover:bg-[#222a3d] text-[#dae2fd] rounded-lg border border-[#2d3449] hover:border-[#facc15] flex items-center gap-2 font-bold transition-all"
@@ -223,7 +228,7 @@ export const Footer: React.FC<{
 
               {/* Pump.fun */}
               <a
-                href="https://pump.fun"
+                href={SOCIAL_LINKS.PUMP_FUN}
                 target="_blank"
                 rel="noreferrer"
                 className="px-3 py-2.5 bg-[#131b2e] hover:bg-[#222a3d] text-[#4ae176] rounded-lg border border-[#2d3449] hover:border-[#4ae176] flex items-center gap-2 font-bold transition-all"

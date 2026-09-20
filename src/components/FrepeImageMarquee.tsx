@@ -17,6 +17,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { sound } from "../audio";
+import { SOCIAL_LINKS } from "../constants/socialLinks";
 import gentlemanPepeRefined from "../assets/images/gentleman_pepe_refined_1789889197008.jpg";
 import gentlemanPepeMascot from "../assets/images/gentleman_pepe_mascot_1789888715358.jpg";
 import frepeWallStreetBull from "../assets/images/frepe_wall_street_bull_1789905071874.jpg";
