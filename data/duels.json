@@ -1,0 +1,34 @@
+[
+  {
+    "id": "duel-0420",
+    "creator": "SolanaSalty",
+    "wagerSol": 1,
+    "potSol": 2,
+    "status": "open",
+    "createdAt": "2026-09-20T12:21:58.504Z"
+  },
+  {
+    "id": "duel-0777",
+    "creator": "PepeTrenchGod",
+    "wagerSol": 0.5,
+    "potSol": 1,
+    "status": "open",
+    "createdAt": "2026-09-20T12:11:58.504Z"
+  },
+  {
+    "id": "duel-0101",
+    "creator": "DegenChef",
+    "wagerSol": 0.1,
+    "potSol": 0.2,
+    "status": "open",
+    "createdAt": "2026-09-20T12:01:58.504Z"
+  },
+  {
+    "id": "duel-0888",
+    "creator": "DiamondCrisp",
+    "wagerSol": 5,
+    "potSol": 10,
+    "status": "open",
+    "createdAt": "2026-09-20T11:51:58.504Z"
+  }
+]

@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: #0b1326;
+    color: #dae2fd;
+  }
+}
+
+@keyframes tickerMarquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes marqueeForward {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes marqueeBackward {
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.animate-marquee-forward {
+  display: flex;
+  width: max-content;
+  animation: marqueeForward 26s linear infinite;
+}
+
+.animate-marquee-backward {
+  display: flex;
+  width: max-content;
+  animation: marqueeBackward 26s linear infinite;
+}
+
+.marquee-pause-hover:hover {
+  animation-play-state: paused;
+}
+
+.animate-ticker {
+  display: flex;
+  width: max-content;
+  animation: tickerMarquee 22s linear infinite;
+}
+
+.animate-ticker-fast {
+  display: flex;
+  width: max-content;
+  animation: tickerMarquee 15s linear infinite;
+}
+
+.animate-ticker-reverse {
+  display: flex;
+  width: max-content;
+  animation: tickerMarquee 20s linear infinite reverse;
+}
+
+.font-headline {
+  font-family: 'Anybody', sans-serif;
+}
+
+.font-body {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'Space Mono', monospace;
+}
+
+.neo-brutal-btn {
+  box-shadow: 4px 4px 0px #000000;
+  border: 2px solid #000000;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neo-brutal-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000000, 0 0 16px rgba(250, 204, 21, 0.5);
+}
+
+.neo-brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px #000000;
+}
+
+.neo-card {
+  box-shadow: 4px 4px 0px #000000;
+  border: 2px solid #2d3449;
+}
+
+.neo-card-heavy {
+  box-shadow: 6px 6px 0px #000000;
+  border: 3px solid #000000;
+}
+
+/* Custom scrollbar for game / list */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b1326;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d3449;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #facc15;
+}

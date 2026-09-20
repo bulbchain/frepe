@@ -1,0 +1,98 @@
+[
+  {
+    "id": "lead-1",
+    "player": "FREPE_CEO",
+    "title": "Suit & Fries",
+    "fighter": "Wall Street Frepe",
+    "score": 84200,
+    "multiplier": 18.4,
+    "friesCaught": 4576,
+    "solGain": "48.20 SOL",
+    "badge": "👑",
+    "createdAt": "2026-09-20T11:31:58.503Z"
+  },
+  {
+    "id": "lead-2",
+    "player": "DiamondHands_Sol",
+    "title": "Golden King",
+    "fighter": "Golden King Frepe",
+    "score": 52140,
+    "multiplier": 9.2,
+    "friesCaught": 3200,
+    "solGain": "24.85 SOL",
+    "badge": "🍟",
+    "createdAt": "2026-09-20T10:31:58.504Z"
+  },
+  {
+    "id": "lead-3",
+    "player": "DegenSponge",
+    "title": "Cyber-Crunch",
+    "fighter": "Cyber-Crunch Frepe",
+    "score": 38900,
+    "multiplier": 6.5,
+    "friesCaught": 2410,
+    "solGain": "14.10 SOL",
+    "badge": "⚡",
+    "createdAt": "2026-09-20T08:31:58.504Z"
+  },
+  {
+    "id": "lead-4",
+    "player": "KetchupKingpin",
+    "title": "Trench Cook",
+    "fighter": "Trench Cook Frepe",
+    "score": 29400,
+    "multiplier": 5.1,
+    "friesCaught": 1850,
+    "solGain": "10.25 SOL",
+    "badge": "🧂",
+    "createdAt": "2026-09-20T06:31:58.504Z"
+  },
+  {
+    "id": "lead-5",
+    "player": "CryptoWhale_0x",
+    "title": "Crispy Baron",
+    "fighter": "Wall Street Frepe",
+    "score": 24300,
+    "multiplier": 4.8,
+    "friesCaught": 1620,
+    "solGain": "8.50 SOL",
+    "badge": "🐋",
+    "createdAt": "2026-09-20T04:31:58.504Z"
+  },
+  {
+    "id": "lead-6",
+    "player": "FrenchFryApe",
+    "title": "Salty Degen",
+    "fighter": "Golden King Frepe",
+    "score": 18950,
+    "multiplier": 3.9,
+    "friesCaught": 1290,
+    "solGain": "6.20 SOL",
+    "badge": "🚀",
+    "createdAt": "2026-09-20T02:31:58.504Z"
+  },
+  {
+    "id": "lead-7",
+    "player": "MoonFryer99",
+    "title": "Fry Cook",
+    "fighter": "Cyber-Crunch Frepe",
+    "score": 14200,
+    "multiplier": 3.2,
+    "friesCaught": 980,
+    "solGain": "4.15 SOL",
+    "badge": "🔥",
+    "createdAt": "2026-09-20T00:31:58.504Z"
+  },
+  {
+    "id": "lead-8",
+    "player": "Bot_0xSoggy",
+    "title": "Dumped",
+    "fighter": "Trench Cook Frepe",
+    "score": 0,
+    "multiplier": 0,
+    "friesCaught": 12,
+    "solGain": "-2.40 SOL",
+    "badge": "🤖",
+    "createdAt": "2026-09-19T22:31:58.504Z"
+  }
+]

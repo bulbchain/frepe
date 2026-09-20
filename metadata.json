@@ -1,0 +1,8 @@
+{
+  "name": "FREPE - Crispy Gains & Fry Catcher Royale",
+  "description": "Fast-paced arcade games and crypto community hub featuring the endless Pepe Run sprint, fry-crowned mascot, Fry Catcher Royale, real global leaderboard, and meme culture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
