@@ -35,6 +35,7 @@ import frepe9 from "../assets/images/frepe9.JPG";
 import frepe10 from "../assets/images/frepe10.JPG";
 import frepe11 from "../assets/images/frepe11.JPG";
 
+
 export interface FrepeImageItem {
   id: string;
   title: string;
