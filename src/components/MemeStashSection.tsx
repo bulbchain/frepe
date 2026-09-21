@@ -156,7 +156,7 @@ export const MemeStashSection: React.FC<{ onOpenSwap: () => void }> = ({ onOpenS
   // Share to X
   const handleShareToX = (m: MemeItem) => {
     sound.playBoost();
-    const tweetText = encodeURIComponent(`${m.raidText}\n\nCA: coming soon`);
+    const tweetText = encodeURIComponent(`${m.raidText}\n\nhttps://frepe.fun`);
     window.open(`${SOCIAL_LINKS.TWITTER_INTENT}?text=${tweetText}`, "_blank");
   };
 
