@@ -9,7 +9,7 @@ export const SOCIAL_LINKS = {
   TELEGRAM: "https://t.me",
   
   // Pump.fun
-  PUMP_FUN: "https://pump.fun/",
+  PUMP_FUN: "https://pump.fun/coin/BTqZkB6HgBmSmckwnmwuQ3QZFQzHZkPwvnXt6MqUpump",
   
   // Tracking/Analytics
   DEX_SCREENER: "https://dexscreener.com",
@@ -20,9 +20,9 @@ export const SOCIAL_LINKS = {
 export type SocialLinkKey = keyof typeof SOCIAL_LINKS;
 
 // Contract Address for FREPE token
-export const CONTRACT_ADDRESS = "CA coming soon";
+export const CONTRACT_ADDRESS = "BTqZkB6HgBmSmckwnmwuQ3QZFQzHZkPwvnXt6MqUpump";
 
 // Short display version for UI elements
-export const CONTRACT_ADDRESS_SHORT = "FrePe777...Pump";
+export const CONTRACT_ADDRESS_SHORT = "BTqZkB6HgBmSmckwnmwuQ3QZFQzHZkPwvnXt6MqUpump";
 
 export const LOGO= "../assets/images/frepelogo.png";
