@@ -16,6 +16,8 @@ import {
   Flame,
   Check,
   Footprints,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 
 interface PepeRunGameProps {
@@ -58,11 +60,13 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
   onRunFinish,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // High-level game states
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [cashedOut, setCashedOut] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Live HUD metrics
   const [distance, setDistance] = useState<number>(0);
@@ -129,6 +133,43 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
     shieldRef.current = selectedFighter.hasShield;
   }, [selectedFighter]);
 
+  // Handle Fullscreen & Landscape request on mobile play
+  const toggleFullscreenPlay = async () => {
+    const elem = containerRef.current;
+    if (!elem) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) {
+          await elem.requestFullscreen();
+        }
+        // Attempt to lock screen orientation to landscape on supported mobile devices
+        if (screen.orientation && (screen.orientation as any).lock) {
+          try {
+            await (screen.orientation as any).lock("landscape");
+          } catch (err) {
+            // Orientation lock might fail if not fully permitted by browser/device settings
+            console.warn("Orientation lock not supported or allowed:", err);
+          }
+        }
+        setIsFullscreen(true);
+      }
+    } catch (err) {
+      console.error("Error attempting to enable full-screen mode:", err);
+    }
+  };
+
+  // Listen to external fullscreen changes (e.g. user pressing escape)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
   // Handle jump
   const triggerJump = useCallback(() => {
     if (!isPlayingRef.current) return;
@@ -183,7 +224,10 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
   }, []);
 
   // Handle start run
-  const startRun = () => {
+  const startRun = async () => {
+    // Automatically trigger fullscreen horizontal mode on mobile/click
+    await toggleFullscreenPlay();
+
     setIsPlaying(true);
     isPlayingRef.current = true;
     setIsGameOver(false);
@@ -281,6 +325,10 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
       colors: ["#facc15", "#4ae176", "#ffffff"],
     });
 
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+
     if (onRunFinish) {
       onRunFinish(scoreRef.current, Math.floor(distanceRef.current));
     }
@@ -306,6 +354,10 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         color: i % 2 === 0 ? "#facc15" : "#ff3b30",
         size: 3 + Math.random() * 5,
       });
+    }
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
     }
 
     if (onRunFinish) {
@@ -461,22 +513,18 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
       ctx.stroke();
 
       // 2. DRAW GROUND / RUNNING TRACK
-      // Dark asphalt runway
       ctx.fillStyle = "#090f1d";
       ctx.fillRect(0, groundY, width, height - groundY);
 
-      // Glowing Golden Track Edge line
       ctx.fillStyle = "#facc15";
       ctx.fillRect(0, groundY, width, 5);
 
-      // Checkered Street Curb
       const curbOffset = (dist * 1.5) % 32;
       for (let x = -curbOffset; x < width + 32; x += 32) {
         ctx.fillStyle = ((x + curbOffset) / 32) % 2 === 0 ? "#facc15" : "#1e293b";
         ctx.fillRect(x, groundY + 5, 32, 7);
       }
 
-      // Track Lane Dashes (speeding sensation)
       const dashOffset = (dist * 2.2) % 50;
       ctx.fillStyle = "#38bdf8";
       ctx.globalAlpha = 0.5;
@@ -487,7 +535,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
 
       // 3. GAMEPLAY SIMULATION (WHEN ACTIVE)
       if (isPlayingRef.current) {
-        // Speed progression: gently increases as distance increases
         const speedBonus = Math.min(6, (worldRef.current.distance / 1500) * 4);
         worldRef.current.speed = (worldRef.current.baseSpeed + speedBonus) * (rocketRef.current ? 1.5 : 1);
         worldRef.current.distance += worldRef.current.speed * 0.3;
@@ -497,15 +544,12 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         setDistance(Math.floor(currentDist));
         setSpeedDisplay(Math.round(worldRef.current.speed * 8));
 
-        // Increment passive score
         scoreRef.current += Math.round((worldRef.current.speed / 2) * multRef.current);
         setScore(scoreRef.current);
 
-        // Runner Physics update
         const r = runnerRef.current;
         r.runFrame += 0.25;
 
-        // Slide timer
         if (r.isSliding) {
           r.height = r.slideHeight;
           r.slideTimer -= 1;
@@ -517,11 +561,9 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           r.height = r.normalHeight;
         }
 
-        // Apply gravity
         r.vy += 0.68;
         r.y += r.vy;
 
-        // Ground collision
         const currentGroundY = groundY - r.height;
         if (r.y >= currentGroundY) {
           r.y = currentGroundY;
@@ -531,7 +573,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           r.jumpCount = 0;
         }
 
-        // Rocket Timer countdown
         if (rocketRef.current) {
           setRocketTimer((prev) => {
             const next = prev - 1;
@@ -543,16 +584,13 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           });
         }
 
-        // SPAWNING SYSTEM: Obstacles & Collectibles
         if (currentDist - lastSpawnDistRef.current > 180 + Math.random() * 120) {
           lastSpawnDistRef.current = currentDist;
           const roll = Math.random();
 
-          // Obstacle spawn
           if (roll < 0.55) {
             const obsRoll = Math.random();
             if (obsRoll < 0.4) {
-              // Red Candlestick hurdle (Jump over)
               obstaclesRef.current.push({
                 x: width + 40,
                 y: groundY - 50,
@@ -561,16 +599,14 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
                 type: "red_candle",
               });
             } else if (obsRoll < 0.7) {
-              // Overhead FUD drone / SEC subpoena banner (SLIDE under!)
               obstaclesRef.current.push({
                 x: width + 40,
-                y: groundY - 82, // Hovering 50px above ground, so runner MUST slide!
+                y: groundY - 82,
                 width: 45,
                 height: 30,
                 type: "overhead_fud",
               });
             } else if (obsRoll < 0.88) {
-              // Soggy Fry puddle on the ground (Jump over)
               obstaclesRef.current.push({
                 x: width + 40,
                 y: groundY - 12,
@@ -579,7 +615,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
                 type: "puddle",
               });
             } else {
-              // Dump Bot roaming
               obstaclesRef.current.push({
                 x: width + 40,
                 y: groundY - 45,
@@ -590,10 +625,8 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
             }
           }
 
-          // Collectible spawn (arc of fries or powerup)
           const collRoll = Math.random();
           if (collRoll < 0.7) {
-            // Arc of 3-5 Crispy Golden Fries
             const fryCount = 3 + Math.floor(Math.random() * 3);
             const startArcX = width + 70;
             for (let f = 0; f < fryCount; f++) {
@@ -605,7 +638,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
               });
             }
           } else if (collRoll < 0.85) {
-            // Mega Fry Box
             collectiblesRef.current.push({
               x: width + 60,
               y: groundY - 55,
@@ -613,7 +645,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
               type: "fry_box",
             });
           } else if (collRoll < 0.93) {
-            // Green Bull Candlestick
             collectiblesRef.current.push({
               x: width + 60,
               y: groundY - 50,
@@ -621,7 +652,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
               type: "green_candle",
             });
           } else {
-            // Rocket Butter Boost or Shield powerup
             const isRocket = Math.random() > 0.5;
             collectiblesRef.current.push({
               x: width + 60,
@@ -638,10 +668,8 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
       for (let i = collectiblesRef.current.length - 1; i >= 0; i--) {
         const c = collectiblesRef.current[i];
         if (isPlayingRef.current) {
-          // Move with world speed
           c.x -= worldRef.current.speed;
 
-          // Magnet effect if rocket is active
           if (rocketRef.current) {
             const dx = runner.x + runner.width / 2 - c.x;
             const dy = runner.y + runner.height / 2 - c.y;
@@ -649,7 +677,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
             c.y += dy * 0.15;
           }
 
-          // Collision check with Pepe
           const collides =
             runner.x < c.x + c.size &&
             runner.x + runner.width > c.x - c.size &&
@@ -657,12 +684,10 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
             runner.y + runner.height > c.y - c.size;
 
           if (collides) {
-            // Collected!
             collectiblesRef.current.splice(i, 1);
             comboRef.current += 1;
             setCombo(comboRef.current);
 
-            // Combo multiplier bonus
             if (comboRef.current % 10 === 0) {
               multRef.current = parseFloat((multRef.current + 0.2).toFixed(2));
               setMultiplier(multRef.current);
@@ -694,11 +719,10 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
             } else if (c.type === "rocket") {
               rocketRef.current = true;
               setRocketActive(true);
-              setRocketTimer(220); // ~6 seconds of rocket flight
+              setRocketTimer(220);
               sound.playBoost();
             }
 
-            // Pickup sparkle particles
             for (let p = 0; p < 8; p++) {
               particlesRef.current.push({
                 x: c.x,
@@ -715,7 +739,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           }
         }
 
-        // Draw Collectible Item
         ctx.save();
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -741,7 +764,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         }
         ctx.restore();
 
-        // Remove off-screen
         if (c.x < -60) {
           collectiblesRef.current.splice(i, 1);
         }
@@ -753,14 +775,12 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         if (isPlayingRef.current) {
           obs.x -= worldRef.current.speed;
 
-          // Check pass for bonus score
           if (!obs.passed && obs.x + obs.width < runner.x) {
             obs.passed = true;
             scoreRef.current += Math.round(25 * multRef.current);
             setScore(scoreRef.current);
           }
 
-          // Check Collision with Pepe
           const hit =
             runner.x + 8 < obs.x + obs.width &&
             runner.x + runner.width - 8 > obs.x &&
@@ -769,7 +789,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
 
           if (hit) {
             if (rocketRef.current) {
-              // Destroy obstacle while rocket active
               obstaclesRef.current.splice(i, 1);
               sound.playHit();
               for (let p = 0; p < 12; p++) {
@@ -786,7 +805,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
               }
               continue;
             } else if (shieldRef.current) {
-              // Shield absorbed hit!
               shieldRef.current = false;
               setShieldActive(false);
               obstaclesRef.current.splice(i, 1);
@@ -795,7 +813,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
               setCombo(0);
               continue;
             } else {
-              // Player takes damage / crash
               livesRef.current -= 1;
               setLives(livesRef.current);
               comboRef.current = 0;
@@ -813,30 +830,24 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           }
         }
 
-        // Draw Obstacle Graphics
         ctx.save();
         if (obs.type === "red_candle") {
-          // Big Red Dump Candlestick (Spike hurdle)
           ctx.fillStyle = "#ff3b30";
           ctx.strokeStyle = "#000000";
           ctx.lineWidth = 2;
-          // Candle body
           ctx.fillRect(obs.x + 4, obs.y + 8, obs.width - 8, obs.height - 8);
           ctx.strokeRect(obs.x + 4, obs.y + 8, obs.width - 8, obs.height - 8);
-          // Wick top line
           ctx.strokeStyle = "#ff3b30";
           ctx.lineWidth = 3;
           ctx.beginPath();
           ctx.moveTo(obs.x + obs.width / 2, obs.y);
           ctx.lineTo(obs.x + obs.width / 2, obs.y + 8);
           ctx.stroke();
-          // Wick bottom line
           ctx.beginPath();
           ctx.moveTo(obs.x + obs.width / 2, obs.y + obs.height);
           ctx.lineTo(obs.x + obs.width / 2, obs.y + obs.height + 6);
           ctx.stroke();
         } else if (obs.type === "overhead_fud") {
-          // Floating FUD Drone / Subpoena (MUST SLIDE UNDER!)
           ctx.fillStyle = "#93000a";
           ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
           ctx.strokeStyle = "#ff3b30";
@@ -849,7 +860,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           ctx.fillText("! FUD !", obs.x + obs.width / 2, obs.y + 14);
           ctx.fillText("SLIDE ⬇️", obs.x + obs.width / 2, obs.y + 24);
         } else if (obs.type === "puddle") {
-          // Soggy Puddle on ground
           ctx.fillStyle = "#38bdf8";
           ctx.beginPath();
           ctx.ellipse(
@@ -868,14 +878,12 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           ctx.font = "14px serif";
           ctx.fillText("💦", obs.x + 12, obs.y + 10);
         } else if (obs.type === "dump_bot") {
-          // Dump bot
           ctx.font = "28px serif";
           ctx.textAlign = "center";
           ctx.fillText("🤖", obs.x + obs.width / 2, obs.y + 32);
         }
         ctx.restore();
 
-        // Remove off-screen
         if (obs.x < -70) {
           obstaclesRef.current.splice(i, 1);
         }
@@ -889,7 +897,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
 
       ctx.save();
 
-      // Shield Aura
       if (shieldRef.current) {
         ctx.strokeStyle = "#4ae176";
         ctx.lineWidth = 3;
@@ -908,7 +915,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         ctx.stroke();
       }
 
-      // Rocket Flight Fire Trails
       if (rocketRef.current) {
         ctx.strokeStyle = "#facc15";
         ctx.lineWidth = 4;
@@ -926,7 +932,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         );
         ctx.stroke();
 
-        // Jet fire behind Pepe
         ctx.fillStyle = Math.random() > 0.5 ? "#facc15" : "#ff3b30";
         ctx.beginPath();
         ctx.moveTo(px, py + runner.height / 2);
@@ -936,7 +941,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         ctx.fill();
       }
 
-      // PEPE SPRITE RENDERING: Gentleman Pepe with Top Hat, Fries, Glasses, Tuxedo, Toes, and Moving Hands & Legs
       drawGentlemanPepe({
         ctx,
         x: px,
@@ -1000,32 +1004,35 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
 
   return (
     <div
+      ref={containerRef}
       id="pepe-run-game-container"
-      className="bg-[#131b2e] rounded-3xl border-4 border-black p-4 sm:p-6 shadow-[8px_8px_0px_#000000] flex flex-col gap-4 relative overflow-hidden"
+      className={`bg-[#131b2e] rounded-3xl border-4 border-black p-3 sm:p-6 shadow-[8px_8px_0px_#000000] flex flex-col gap-3 relative overflow-hidden transition-all ${
+        isFullscreen ? "w-screen h-screen justify-center items-center z-50 rounded-none p-2" : ""
+      }`}
     >
       {/* Top HUD Row */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#060e20] p-3 sm:p-4 rounded-2xl border-2 border-[#2d3449]">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#060e20] p-2.5 sm:p-4 rounded-2xl border-2 border-[#2d3449] w-full">
         {/* Distance & Score */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div>
-            <span className="font-mono-code text-[10px] text-[#9a9078] block">DISTANCE</span>
-            <div className="flex items-baseline gap-1 font-headline font-black text-xl sm:text-2xl text-[#facc15]">
-              <Footprints className="w-5 h-5 text-[#facc15]" />
+            <span className="font-mono-code text-[9px] sm:text-[10px] text-[#9a9078] block">DISTANCE</span>
+            <div className="flex items-baseline gap-1 font-headline font-black text-lg sm:text-2xl text-[#facc15]">
+              <Footprints className="w-4 h-4 sm:w-5 sm:h-5 text-[#facc15]" />
               <span>{distance}</span>
-              <span className="text-xs font-mono-code text-[#ffecb9]">m</span>
+              <span className="text-[10px] sm:text-xs font-mono-code text-[#ffecb9]">m</span>
             </div>
           </div>
 
-          <div className="h-8 w-[2px] bg-[#2d3449]" />
+          <div className="h-7 sm:h-8 w-[2px] bg-[#2d3449]" />
 
           <div>
-            <span className="font-mono-code text-[10px] text-[#9a9078] block">SCORE</span>
-            <span className="font-headline font-black text-xl sm:text-2xl text-[#ffecb9] block">
+            <span className="font-mono-code text-[9px] sm:text-[10px] text-[#9a9078] block">SCORE</span>
+            <span className="font-headline font-black text-lg sm:text-2xl text-[#ffecb9] block">
               {score.toLocaleString()}
             </span>
           </div>
 
-          <div className="h-8 w-[2px] bg-[#2d3449] hidden sm:block" />
+          <div className="h-7 sm:h-8 w-[2px] bg-[#2d3449] hidden sm:block" />
 
           <div className="hidden sm:block">
             <span className="font-mono-code text-[10px] text-[#9a9078] block">FRIES</span>
@@ -1036,37 +1043,34 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         </div>
 
         {/* Speed, Multiplier & Lives */}
-        <div className="flex items-center gap-3">
-          {/* Multiplier Pill */}
-          <div className="px-2.5 py-1 rounded-lg bg-[#222a3d] border border-[#facc15] font-mono-code font-black text-xs text-[#facc15] flex items-center gap-1 shadow-[2px_2px_0px_#000000]">
-            <Flame className="w-3.5 h-3.5 text-[#ff3b30]" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-[#222a3d] border border-[#facc15] font-mono-code font-black text-[11px] sm:text-xs text-[#facc15] flex items-center gap-1 shadow-[2px_2px_0px_#000000]">
+            <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#ff3b30]" />
             <span>{multiplier.toFixed(1)}x</span>
           </div>
 
-          {/* Speed Pill */}
-          <div className="px-2.5 py-1 rounded-lg bg-[#222a3d] border border-[#2d3449] font-mono-code text-xs text-[#38bdf8] flex items-center gap-1">
-            <Rocket className="w-3.5 h-3.5 text-[#38bdf8]" />
+          <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-[#222a3d] border border-[#2d3449] font-mono-code text-[11px] sm:text-xs text-[#38bdf8] flex items-center gap-1">
+            <Rocket className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#38bdf8]" />
             <span>{speedDisplay} km/h</span>
           </div>
 
-          {/* Lives Indicator */}
-          <div className="flex items-center gap-1 bg-[#090f1d] px-2.5 py-1 rounded-lg border border-[#2d3449]">
+          <div className="flex items-center gap-1 bg-[#090f1d] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg border border-[#2d3449]">
             {[...Array(3)].map((_, idx) => (
               <span
                 key={idx}
-                className={`text-sm ${idx < lives ? "opacity-100" : "opacity-20 saturate-0"}`}
+                className={`text-xs sm:text-sm ${idx < lives ? "opacity-100" : "opacity-20 saturate-0"}`}
               >
                 ❤️
               </span>
             ))}
-            {shieldActive && <span className="text-sm">🛡️</span>}
-            {rocketActive && <span className="text-sm animate-bounce">🚀</span>}
+            {shieldActive && <span className="text-xs sm:text-sm">🛡️</span>}
+            {rocketActive && <span className="text-xs sm:text-sm animate-bounce">🚀</span>}
           </div>
         </div>
       </div>
 
       {/* Main Interactive Canvas */}
-      <div className="relative w-full overflow-hidden rounded-2xl border-4 border-black bg-[#060a14]">
+      <div className={`relative w-full overflow-hidden rounded-2xl border-4 border-black bg-[#060a14] ${isFullscreen ? "flex-1 flex items-center justify-center max-h-[85vh]" : ""}`}>
         <canvas
           ref={canvasRef}
           width={800}
@@ -1075,17 +1079,17 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
           className="w-full h-auto max-h-[360px] object-cover cursor-pointer block"
         />
 
-        {/* Mobile On-Canvas Controls */}
+        {/* Compact Mobile On-Canvas Controls */}
         {isPlaying && (
-          <div className="absolute bottom-3 right-3 flex items-center gap-2 z-20">
+          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 z-20">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 triggerSlide();
               }}
-              className="px-4 py-3 bg-[#93000a] text-white border-2 border-black rounded-xl font-headline font-black text-xs uppercase shadow-[2px_2px_0px_#000000] active:translate-y-0.5 flex items-center gap-1"
+              className="px-3 py-2 bg-[#93000a] text-white border-2 border-black rounded-xl font-headline font-black text-[10px] uppercase shadow-[2px_2px_0px_#000000] active:translate-y-0.5 flex items-center gap-1 opacity-90 hover:opacity-100"
             >
-              <ArrowDown className="w-4 h-4" />
+              <ArrowDown className="w-3.5 h-3.5" />
               <span>SLIDE</span>
             </button>
             <button
@@ -1093,22 +1097,22 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
                 e.stopPropagation();
                 triggerJump();
               }}
-              className="px-5 py-3 bg-[#4ae176] text-[#002109] border-2 border-black rounded-xl font-headline font-black text-xs uppercase shadow-[2px_2px_0px_#000000] active:translate-y-0.5 flex items-center gap-1"
+              className="px-3.5 py-2 bg-[#4ae176] text-[#002109] border-2 border-black rounded-xl font-headline font-black text-[10px] uppercase shadow-[2px_2px_0px_#000000] active:translate-y-0.5 flex items-center gap-1 opacity-90 hover:opacity-100"
             >
-              <ArrowUp className="w-4 h-4 font-black" />
+              <ArrowUp className="w-3.5 h-3.5 font-black" />
               <span>JUMP</span>
             </button>
           </div>
         )}
 
-        {/* Start Button Overlay (If Not Playing) */}
+        {/* Start Button Overlay (If Not Playing) with Fullscreen/Landscape Launcher */}
         {!isPlaying && !isGameOver && !cashedOut && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <button
               onClick={startRun}
-              className="pointer-events-auto neo-brutal-btn bg-[#facc15] hover:bg-[#ffecb9] text-[#3c2f00] font-headline text-lg uppercase px-8 py-4 rounded-2xl border-4 border-black font-black flex items-center gap-2.5 shadow-[6px_6px_0px_#000000] cursor-pointer"
+              className="pointer-events-auto neo-brutal-btn bg-[#facc15] hover:bg-[#ffecb9] text-[#3c2f00] font-headline text-base sm:text-lg uppercase px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl border-4 border-black font-black flex items-center gap-2.5 shadow-[6px_6px_0px_#000000] cursor-pointer"
             >
-              <Rocket className="w-6 h-6 text-[#93000a]" />
+              <Rocket className="w-5 h-5 sm:w-6 sm:h-6 text-[#93000a]" />
               <span>START PEPE RUN</span>
             </button>
           </div>
@@ -1117,9 +1121,9 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         {/* Game Over / Crash Overlay */}
         {isGameOver && (
           <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-30">
-            <div className="bg-[#131b2e] border-4 border-black rounded-3xl p-6 max-w-sm w-full shadow-[8px_8px_0px_#000000] flex flex-col items-center text-center gap-3">
-              <span className="text-4xl">💥</span>
-              <h3 className="font-headline text-2xl uppercase text-[#ff3b30] font-black">
+            <div className="bg-[#131b2e] border-4 border-black rounded-3xl p-5 max-w-sm w-full shadow-[8px_8px_0px_#000000] flex flex-col items-center text-center gap-2.5">
+              <span className="text-3xl">💥</span>
+              <h3 className="font-headline text-xl uppercase text-[#ff3b30] font-black">
                 RUGGED BY THE DIP!
               </h3>
               <p className="text-xs font-mono-code text-[#d1c6ab]">
@@ -1127,7 +1131,6 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
                 <strong className="text-[#4ae176]">{score.toLocaleString()} PTS</strong>!
               </p>
 
-              {/* Submit Form */}
               {!submitted ? (
                 <form onSubmit={handleSubmitScore} className="w-full flex flex-col gap-2 mt-1">
                   <input
@@ -1174,9 +1177,9 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         {/* Cashed Out Banner Overlay */}
         {cashedOut && (
           <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-30">
-            <div className="bg-[#131b2e] border-4 border-black rounded-3xl p-6 max-w-sm w-full shadow-[8px_8px_0px_#000000] flex flex-col items-center text-center gap-3">
-              <span className="text-4xl">💰</span>
-              <h3 className="font-headline text-2xl uppercase text-[#4ae176] font-black">
+            <div className="bg-[#131b2e] border-4 border-black rounded-3xl p-5 max-w-sm w-full shadow-[8px_8px_0px_#000000] flex flex-col items-center text-center gap-2.5">
+              <span className="text-3xl">💰</span>
+              <h3 className="font-headline text-xl uppercase text-[#4ae176] font-black">
                 GAINS CASHED OUT!
               </h3>
               <p className="text-xs font-mono-code text-[#d1c6ab]">
@@ -1228,23 +1231,23 @@ export const PepeRunGame: React.FC<PepeRunGameProps> = ({
         )}
       </div>
 
-      {/* Control Actions Row: Jump, Slide, Cashout */}
+      {/* Control Actions Row */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="flex items-center gap-2">
           {isPlaying ? (
             <button
               onClick={handleCashout}
-              className="neo-brutal-btn bg-[#4ae176] hover:bg-[#22c55e] text-[#002109] font-headline text-xs uppercase px-5 py-2.5 rounded-xl border-2 border-black font-black flex items-center gap-1.5 shadow-[3px_3px_0px_#000000] cursor-pointer"
+              className="neo-brutal-btn bg-[#4ae176] hover:bg-[#22c55e] text-[#002109] font-headline text-xs uppercase px-4 py-2 rounded-xl border-2 border-black font-black flex items-center gap-1.5 shadow-[3px_3px_0px_#000000] cursor-pointer"
             >
-              <Award className="w-4 h-4" />
-              <span>CASHOUT SPRINT ({score.toLocaleString()} PTS)</span>
+              <Award className="w-3.5 h-3.5" />
+              <span>CASHOUT ({score.toLocaleString()} PTS)</span>
             </button>
           ) : (
             <button
               onClick={startRun}
-              className="neo-brutal-btn bg-[#facc15] hover:bg-[#ffecb9] text-[#3c2f00] font-headline text-xs uppercase px-5 py-2.5 rounded-xl border-2 border-black font-black flex items-center gap-1.5 shadow-[3px_3px_0px_#000000] cursor-pointer"
+              className="neo-brutal-btn bg-[#facc15] hover:bg-[#ffecb9] text-[#3c2f00] font-headline text-xs uppercase px-4 py-2 rounded-xl border-2 border-black font-black flex items-center gap-1.5 shadow-[3px_3px_0px_#000000] cursor-pointer"
             >
-              <Rocket className="w-4 h-4 text-[#93000a]" />
+              <Rocket className="w-3.5 h-3.5 text-[#93000a]" />
               <span>{isGameOver || cashedOut ? "RUN AGAIN" : "START PEPE RUN"}</span>
             </button>
           )}

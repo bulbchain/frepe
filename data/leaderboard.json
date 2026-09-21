@@ -84,6 +84,18 @@
     "createdAt": "2026-09-20T00:31:58.504Z"
   },
   {
+    "id": "lead-1789991283910-kugj",
+    "player": "d",
+    "title": "Speed Trench Runner",
+    "fighter": "Wall Street Frepe (Pepe Run)",
+    "score": 215,
+    "multiplier": 1.25,
+    "friesCaught": 0,
+    "solGain": "0.01 SOL",
+    "badge": "🍟",
+    "createdAt": "2026-09-21T11:48:03.911Z"
+  },
+  {
     "id": "lead-8",
     "player": "Bot_0xSoggy",
     "title": "Dumped",

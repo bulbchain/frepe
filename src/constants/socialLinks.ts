@@ -20,7 +20,7 @@ export const SOCIAL_LINKS = {
 export type SocialLinkKey = keyof typeof SOCIAL_LINKS;
 
 // Contract Address for FREPE token
-export const CONTRACT_ADDRESS = "testing";
+export const CONTRACT_ADDRESS = "CA coming soon";
 
 // Short display version for UI elements
 export const CONTRACT_ADDRESS_SHORT = "FrePe777...Pump";
