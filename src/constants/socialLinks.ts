@@ -14,12 +14,12 @@ export const SOCIAL_LINKS = {
   // Tracking/Analytics
   DEX_SCREENER: "https://dexscreener.com",
   SOLSCAN: "https://solscan.io",
-  PUMP_FUN: "https://pump.fun/coin/",
+  PUMP_FUN: "https://pump.fun/coin/9LiiS7wU8NqgxHy3V5Hn8DMaWDUBAoVA3Lhag3Zypump",
 } as const;
 
 //CA
-export const CONTRACT_ADDRESS = "coming soon";
-export const CONTRACT_ADDRESS_SHORT = "coming soon";
+export const CONTRACT_ADDRESS = "9LiiS7wU8NqgxHy3V5Hn8DMaWDUBAoVA3Lhag3Zypump";
+export const CONTRACT_ADDRESS_SHORT = "9LiiS7wU8NqgxHy3V5Hn8DMaWDUBAoVA3Lhag3Zypump";
 
 // Type for social link keys
 export type SocialLinkKey = keyof typeof SOCIAL_LINKS;
